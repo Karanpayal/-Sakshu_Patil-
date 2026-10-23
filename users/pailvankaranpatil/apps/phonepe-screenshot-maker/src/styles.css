@@ -1,15 +1,280 @@
-/* The theme tokens (--background, --card, --brand, --canvas, --chart-1…5,
-   light and dark) are injected by @makoai/app-sdk, and the house base and kit
-   styles come from @makoai/app-sdk/ui.css (imported before this file).
-   Override a token here to re-theme; keep app layout below. */
+* {
+  font-family: 'Noto Sans Devanagari', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
 
-.page {
+.app-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px 16px 48px;
 }
 
-.muted {
-  margin: 0;
+.app-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.app-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: var(--foreground);
+}
+
+.subtitle {
   color: var(--muted-foreground);
+  font-size: 15px;
+  margin: 0;
+}
+
+.app-content {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .app-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Form Section */
+.form-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.form-section h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 20px;
+  color: var(--foreground);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.form-group input,
+.form-group select {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  background: var(--background);
+  color: var(--foreground);
+  transition: border-color 0.15s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--brand);
+}
+
+.input-with-button {
+  display: flex;
+  gap: 8px;
+}
+
+.input-with-button input {
+  flex: 1;
+}
+
+.btn-small {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.15s;
+}
+
+.btn-small:hover {
+  background: var(--canvas);
+  border-color: var(--brand);
+}
+
+.btn-download {
+  width: 100%;
+  margin-top: 24px;
+  padding: 14px;
+  background: #5f27cd;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-download:hover:not(:disabled) {
+  background: #4a1fa3;
+  transform: translateY(-1px);
+}
+
+.btn-download:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Preview Section */
+.preview-section {
+  position: sticky;
+  top: 24px;
+}
+
+.preview-section h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 16px;
+  color: var(--foreground);
+}
+
+.phone-frame {
+  background: #f5f5f5;
+  border-radius: 24px;
+  padding: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* PhonePe Screenshot Styles */
+.phonepe-screenshot {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.pp-header {
+  background: linear-gradient(135deg, #5f27cd 0%, #6c3fd1 100%);
+  color: white;
+  padding: 16px;
+}
+
+.pp-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pp-back,
+.pp-menu {
+  font-size: 24px;
+  cursor: pointer;
+  width: 32px;
+}
+
+.pp-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.pp-status-section {
+  text-align: center;
+  padding: 32px 16px 24px;
+}
+
+.pp-status-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 32px;
+  color: white;
+  font-weight: bold;
+}
+
+.pp-status-text {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: #1a1a1a;
+}
+
+.pp-amount-section {
+  text-align: center;
+  padding: 0 16px 32px;
+}
+
+.pp-amount {
+  font-size: 42px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.pp-details {
+  padding: 0 16px 24px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.pp-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.pp-detail-row:last-child {
+  border-bottom: none;
+}
+
+.pp-detail-label {
+  font-size: 13px;
+  color: #666;
+  flex: 1;
+  line-height: 1.4;
+}
+
+.pp-detail-value {
+  font-size: 13px;
+  color: #1a1a1a;
+  font-weight: 500;
+  text-align: right;
+  flex: 1;
+  word-break: break-word;
+}
+
+.pp-footer {
+  background: #f9f9f9;
+  padding: 16px;
+  text-align: center;
+}
+
+.pp-footer-text {
+  font-size: 12px;
+  color: #999;
 }
