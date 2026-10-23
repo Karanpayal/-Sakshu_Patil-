@@ -1,0 +1,8 @@
+{
+  "id": "6adb422530e8016cdab24eb0",
+  "schemaVersion": 1,
+  "title": "PhonePe Screenshot Maker",
+  "description": "Create mock PhonePe payment screenshots with customizable details for demos and templates",
+  "entry": "src/main.tsx",
+  "bindings": []
+}
