@@ -1,9 +1,9 @@
 import { useState, useCallback, useRef } from "react";
-import * as pdfjsLib from "pdfjs-dist";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 
-// Set up the worker using the bundled worker
+// Set up the worker using the legacy build (more compatible)
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.mjs",
+  "pdfjs-dist/legacy/build/pdf.worker.mjs",
   import.meta.url
 ).toString();
 
@@ -29,6 +29,12 @@ export default function App() {
       return;
     }
 
+    if (file.size === 0) {
+      setErrorMsg("फाइल रिकामी आहे / The file is empty (0 bytes). Please select a valid PDF.");
+      setStatus("error");
+      return;
+    }
+
     setFileName(file.name);
     setStatus("extracting");
     setExtractedText("");
@@ -36,8 +42,22 @@ export default function App() {
     setProgress("PDF लोड होत आहे... / Loading PDF...");
 
     try {
-      const arrayBuffer = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      // Use FileReader for better compatibility
+      const arrayBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as ArrayBuffer);
+        reader.onerror = () => reject(new Error("फाइल वाचण्यात त्रुटी / Failed to read file"));
+        reader.readAsArrayBuffer(file);
+      });
+      
+      console.log("File size:", file.size, "bytes, ArrayBuffer size:", arrayBuffer.byteLength);
+
+      // Check if buffer is actually empty
+      if (arrayBuffer.byteLength === 0) {
+        throw new Error("फाइल रिकामी आहे / File is empty (0 bytes)");
+      }
+
+      const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
       const totalPages = pdf.numPages;
       let fullText = "";
 
@@ -58,9 +78,17 @@ export default function App() {
       setProgress("");
     } catch (err: any) {
       console.error("PDF extraction error:", err);
-      setErrorMsg(
-        `PDF वाचण्यात त्रुटी / Error reading PDF: ${err.message || "Unknown error"}`
-      );
+      let errorMsg = `PDF वाचण्यात त्रुटी / Error reading PDF`;
+      
+      if (err.name === "InvalidPDFException") {
+        errorMsg = "ही वैध PDF फाइल नाही / This is not a valid PDF file. Please check the file.";
+      } else if (err.message?.includes("empty")) {
+        errorMsg = "फाइल रिकामी आहे / The file is empty";
+      } else if (err.message) {
+        errorMsg += `: ${err.message}`;
+      }
+      
+      setErrorMsg(errorMsg);
       setStatus("error");
     }
   }, []);

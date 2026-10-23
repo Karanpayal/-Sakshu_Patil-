@@ -3,6 +3,10 @@
    styles come from @makoai/app-sdk/ui.css (imported before this file).
    Override a token here to re-theme; keep app layout below. */
 
+* {
+  font-family: 'Noto Sans Devanagari', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
 .app-container {
   max-width: 860px;
   margin: 0 auto;
