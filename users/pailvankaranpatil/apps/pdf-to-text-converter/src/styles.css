@@ -3,13 +3,310 @@
    styles come from @makoai/app-sdk/ui.css (imported before this file).
    Override a token here to re-theme; keep app layout below. */
 
-.page {
-  max-width: 1200px;
+.app-container {
+  max-width: 860px;
   margin: 0 auto;
   padding: 24px 16px 48px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.muted {
-  margin: 0;
+/* ── Header ── */
+.app-header {
+  text-align: center;
+  padding: 32px 0 24px;
+}
+
+.header-icon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.app-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0 0 6px;
+}
+
+.subtitle {
   color: var(--muted-foreground);
+  font-size: 15px;
+  margin: 0;
+}
+
+/* ── Main ── */
+.app-main {
+  flex: 1;
+}
+
+/* ── Drop Zone ── */
+.drop-zone {
+  border: 2px dashed var(--border, #d4d4d9);
+  border-radius: 16px;
+  padding: 48px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--card, #fff);
+}
+
+.drop-zone:hover {
+  border-color: var(--brand, #527df2);
+  background: color-mix(in srgb, var(--brand, #527df2) 4%, var(--card, #fff));
+}
+
+.drop-zone.dragging {
+  border-color: var(--brand, #527df2);
+  background: color-mix(in srgb, var(--brand, #527df2) 8%, var(--card, #fff));
+  transform: scale(1.01);
+}
+
+.drop-zone.has-result {
+  padding: 24px;
+  cursor: default;
+  border-style: solid;
+  border-color: var(--positive, #22c55e);
+}
+
+.drop-zone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-icon {
+  color: var(--muted-foreground);
+  margin-bottom: 8px;
+}
+
+.drop-text {
+  font-size: 16px;
+  color: var(--foreground);
+  margin: 0;
+  font-weight: 500;
+}
+
+.browse-link {
+  color: var(--brand, #527df2);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.drop-subtext {
+  font-size: 13px;
+  color: var(--muted-foreground);
+  margin: 0;
+}
+
+/* ── Extracting State ── */
+.drop-zone-content.extracting {
+  cursor: default;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border, #d4d4d9);
+  border-top-color: var(--brand, #527df2);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.progress-text {
+  font-size: 14px;
+  color: var(--foreground);
+  margin: 8px 0 0;
+  font-weight: 500;
+}
+
+.file-name {
+  font-size: 13px;
+  color: var(--muted-foreground);
+  margin: 0;
+  word-break: break-all;
+}
+
+/* ── Done State ── */
+.drop-zone-content.done {
+  cursor: default;
+}
+
+.success-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--positive, #22c55e);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.done-text {
+  font-size: 14px;
+  color: var(--positive, #22c55e);
+  margin: 4px 0 12px;
+  font-weight: 500;
+}
+
+/* ── Error ── */
+.error-banner {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--negative, #ef4444) 8%, var(--card, #fff));
+  border: 1px solid color-mix(in srgb, var(--negative, #ef4444) 30%, transparent);
+  border-radius: 10px;
+  color: var(--negative, #ef4444);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.error-icon {
+  font-size: 18px;
+}
+
+/* ── Results ── */
+.results-section {
+  margin-top: 20px;
+}
+
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.stat-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: var(--canvas, #f5f5f5);
+  color: var(--muted-foreground);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--brand, #527df2);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--canvas, #f5f5f5);
+  color: var(--foreground);
+  border: 1px solid var(--border, #d4d4d9);
+}
+
+.btn-secondary:hover {
+  background: var(--border, #d4d4d9);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+/* ── Text Output ── */
+.text-output {
+  background: var(--card, #fff);
+  border: 1px solid var(--border, #d4d4d9);
+  border-radius: 12px;
+  padding: 20px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.text-output pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--foreground);
+}
+
+/* ── Footer ── */
+.app-footer {
+  text-align: center;
+  padding: 32px 0 16px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+
+.app-footer p {
+  margin: 2px 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .app-header h1 {
+    font-size: 22px;
+  }
+
+  .drop-zone {
+    padding: 32px 16px;
+  }
+
+  .results-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .action-buttons {
+    width: 100%;
+  }
+
+  .action-buttons .btn {
+    flex: 1;
+    justify-content: center;
+  }
 }

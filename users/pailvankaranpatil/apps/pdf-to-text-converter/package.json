@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@makoai/app-sdk": "^2.9.0",
+    "pdfjs-dist": "^6.4.299",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
