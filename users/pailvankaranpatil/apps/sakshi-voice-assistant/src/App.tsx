@@ -39,15 +39,23 @@ declare global {
   }
 }
 
+// Get time-based greeting
+function getTimeGreeting(): { marathi: string; english: string; emoji: string; period: string } {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) {
+    return { marathi: 'शुभ सकाळ', english: 'Good Morning', emoji: '🌅', period: 'morning' };
+  } else if (hour >= 12 && hour < 17) {
+    return { marathi: 'शुभ दुपार', english: 'Good Afternoon', emoji: '☀️', period: 'afternoon' };
+  } else if (hour >= 17 && hour < 21) {
+    return { marathi: 'शुभ संध्याकाळ', english: 'Good Evening', emoji: '🌇', period: 'evening' };
+  } else {
+    return { marathi: 'शुभ रात्री', english: 'Good Night', emoji: '🌙', period: 'night' };
+  }
+}
+
 function App() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 0,
-      text: 'नमस्कार! मी Sakshi, तुमची voice assistant. मला काहीही विचारा! 🙏',
-      sender: 'sakshi',
-      timestamp: new Date(),
-    },
-  ]);
+  const greeting = getTimeGreeting();
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [interimText, setInterimText] = useState('');
@@ -57,6 +65,38 @@ function App() {
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const msgIdRef = useRef(1);
+
+  // Time-based greeting + daily check-in on app load
+  useEffect(() => {
+    const hour = new Date().getHours();
+    const mrGreeting = greeting.marathi;
+    const enGreeting = greeting.english;
+
+    // First message: time-based greeting
+    const greetingMsg: Message = {
+      id: msgIdRef.current++,
+      text: `${greeting.emoji} ${mrGreeting}! ${enGreeting}!`,
+      sender: 'sakshi',
+      timestamp: new Date(),
+    };
+
+    // Second message: daily check-in (after a short delay)
+    const checkinMsg: Message = {
+      id: msgIdRef.current++,
+      text: 'तू कसा आहेस? आज काय करतोयस? मला सांग ना! 😊',
+      sender: 'sakshi',
+      timestamp: new Date(),
+    };
+
+    setMessages([greetingMsg]);
+
+    // Add check-in message after 1.5 seconds for a natural feel
+    const timer = setTimeout(() => {
+      setMessages((prev) => [...prev, checkinMsg]);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -93,6 +133,49 @@ function App() {
   const generateResponse = useCallback((input: string): string => {
     const lower = input.toLowerCase();
     const isMarathi = /[\u0900-\u097F]/.test(input);
+
+    // Good Morning / Afternoon / Evening / Night responses
+    if (/good\s*morning|शुभ\s*सकाळ|सकाळ/i.test(lower)) {
+      return isMarathi
+        ? '🌅 शुभ सकाळ! तुझा दिवस छान जावो! आज काय plan आहे?'
+        : '🌅 Good Morning! Hope you have a wonderful day! What\'s your plan for today?';
+    }
+    if (/good\s*afternoon|शुभ\s*दुपार|दुपार/i.test(lower)) {
+      return isMarathi
+        ? '☀️ शुभ दुपार! जेवण झालं का? आज काय करतोयस?'
+        : '☀️ Good Afternoon! Have you had lunch? What are you up to today?';
+    }
+    if (/good\s*evening|शुभ\s*संध्याकाळ|संध्याकाळ/i.test(lower)) {
+      return isMarathi
+        ? '🌇 शुभ संध्याकाळ! दिवस कसा गेला? काही मजेशीर झालं का?'
+        : '🌇 Good Evening! How was your day? Anything fun happen?';
+    }
+    if (/good\s*night|शुभ\s*रात्री|रात्री/i.test(lower)) {
+      return isMarathi
+        ? '🌙 शुभ रात्री! गोड स्वप्न पडो! उद्या भेटू 💤'
+        : '🌙 Good Night! Sweet dreams! See you tomorrow 💤';
+    }
+
+    // User says they're fine/good
+    if (/छान|मस्त|बरा|चांगला|चांगली|fine|good|great|great|ok|ठीक|आहे/i.test(lower) && /मी|मी|aah|aahe|आहे|आहेस/i.test(lower)) {
+      return isMarathi
+        ? 'अरे वा! छान ऐकून आनंद झाला! 😊 आणखी काय करतोयस सांग!'
+        : 'That\'s great to hear! 😊 Tell me more, what else are you up to?';
+    }
+
+    // User says they're not well
+    if (/वाइट|खराब|आजारी|थकलो|थकले|bad|tired|sick|not\s*good/i.test(lower)) {
+      return isMarathi
+        ? 'अरे, काळजी घे! 💪 थोडा आराम कर आणि पाणी प्या. मी इथे आहे, काही मदत हवी असल्यास सांग!'
+        : 'Oh no, take care! 💪 Rest a bit and drink water. I\'m here if you need anything!';
+    }
+
+    // User shares what they're doing - general positive response
+    if (/करतोय|करतेय|आहे|काम|study|work|playing|खेळ|वाच|office|शाळा|college/i.test(lower)) {
+      return isMarathi
+        ? 'वाह, छान! 😊 तुला तुझं काम करताना मजा येत असेल अशी आशा! मला काही मदत हवी असल्यास सांग.'
+        : 'Wow, nice! 😊 Hope you\'re enjoying what you\'re doing. Let me know if you need any help!';
+    }
 
     if (/namaskar|नमस्कार|hello|hi|hey|नमस्ते/i.test(lower)) {
       return isMarathi
@@ -158,8 +241,8 @@ function App() {
     }
     if (/काय करू|what can you|help|मदत|features/i.test(lower)) {
       return isMarathi
-        ? 'मी हे करू शकते:\n🕐 वेळ आणि तारीख सांगणे\n😄 विनोद सांगणे\n💬 तुमच्याशी गप्पा मारणे\n🎤 तुमचे बोलणे ऐकणे\n\nमला काहीही विचारा!'
-        : 'I can do:\n🕐 Tell time and date\n😄 Tell jokes\n💬 Have conversations\n🎤 Listen to your voice\n\nAsk me anything!';
+        ? 'मी हे करू शकते:\n🌅 सकाळ-दुपार-संध्याकाळ-रात्री greeting\n💬 रोज तुला विचारणे कसा आहेस\n🕐 वेळ आणि तारीख सांगणे\n😄 विनोद सांगणे\n🎤 तुमचे बोलणे ऐकणे\n\nमला काहीही विचारा!'
+        : 'I can do:\n🌅 Time-based greetings (Morning/Afternoon/Evening/Night)\n💬 Daily check-in - ask how you\'re doing\n🕐 Tell time and date\n😄 Tell jokes\n🎤 Listen to your voice\n\nAsk me anything!';
     }
     if (/love|प्रेम|छान|सुंदर|beautiful|awesome|great/i.test(lower)) {
       return isMarathi
@@ -273,7 +356,7 @@ function App() {
           <div>
             <h1 className="title">Sakshi</h1>
             <p className="subtitle">
-              {isListening ? '🎤 ऐकत आहे...' : isSpeaking ? '🔊 बोलत आहे...' : '● तयार आहे'}
+              {isListening ? '🎤 ऐकत आहे...' : isSpeaking ? '🔊 बोलत आहे...' : `${greeting.emoji} ${greeting.marathi}`}
             </p>
           </div>
         </div>
