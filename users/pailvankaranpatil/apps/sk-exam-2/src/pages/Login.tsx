@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { verifyAdmin, getStudentByMobile, generateOTP, verifyOTP } from '../utils/storage';
-import { GraduationCap, Shield, Phone, Lock, Mail, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { GraduationCap, Shield, Phone, Lock, Mail, ArrowRight, Eye, EyeOff, MessageSquare, Copy, CheckCircle } from 'lucide-react';
 
 export default function Login({ onSwitchToRegister }: { onSwitchToRegister: () => void }) {
   const { login } = useAuth();
@@ -19,6 +19,7 @@ export default function Login({ onSwitchToRegister }: { onSwitchToRegister: () =
   const [otpSent, setOtpSent] = useState(false);
   const [generatedOtp, setGeneratedOtp] = useState('');
   const [studentError, setStudentError] = useState('');
+  const [otpCopied, setOtpCopied] = useState(false);
 
   const handleAdminLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +45,12 @@ export default function Login({ onSwitchToRegister }: { onSwitchToRegister: () =
     const otpCode = generateOTP(mobile);
     setGeneratedOtp(otpCode);
     setOtpSent(true);
-    alert(`Your OTP is: ${otpCode}\n(In production, this would be sent via SMS)`);
+  };
+
+  const handleCopyOTP = () => {
+    navigator.clipboard.writeText(generatedOtp);
+    setOtpCopied(true);
+    setTimeout(() => setOtpCopied(false), 2000);
   };
 
   const handleStudentLogin = (e: React.FormEvent) => {
@@ -176,6 +182,31 @@ export default function Login({ onSwitchToRegister }: { onSwitchToRegister: () =
                 </button>
               ) : (
                 <>
+                  {/* OTP Display Box */}
+                  <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <MessageSquare className="w-4 h-4 text-green-600 dark:text-green-400" />
+                      <span className="text-sm font-medium text-green-800 dark:text-green-200">OTP Sent Successfully!</span>
+                    </div>
+                    <div className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-md p-3 border border-green-300 dark:border-green-600">
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Your OTP is:</p>
+                        <p className="text-2xl font-bold text-green-600 dark:text-green-400 tracking-widest">{generatedOtp}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleCopyOTP}
+                        className="flex items-center gap-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-medium transition-colors"
+                      >
+                        {otpCopied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                        {otpCopied ? 'Copied!' : 'Copy'}
+                      </button>
+                    </div>
+                    <p className="text-xs text-green-700 dark:text-green-300 mt-2">
+                      💡 In production, this OTP would be sent via SMS to +91 {mobile}
+                    </p>
+                  </div>
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Enter OTP</label>
                     <div className="relative">
