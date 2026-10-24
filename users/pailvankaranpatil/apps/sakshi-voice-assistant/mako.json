@@ -1,0 +1,8 @@
+{
+  "id": "6adcd9837981ce2ce1dc6b5f",
+  "schemaVersion": 1,
+  "title": "Sakshi - Voice Assistant",
+  "description": "A modern voice assistant named Sakshi with Marathi and English support, animated waveform UI, and chat interface",
+  "entry": "src/main.tsx",
+  "bindings": []
+}
