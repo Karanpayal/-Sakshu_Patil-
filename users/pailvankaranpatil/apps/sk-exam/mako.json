@@ -1,0 +1,8 @@
+{
+  "id": "6adcfcfb564172e50c86e750",
+  "schemaVersion": 1,
+  "title": "SK_EXAM",
+  "description": "रोजचा परीक्षा App - दररोज नवीन प्रश्न, MCQ टेस्ट, आणि प्रत्येक प्रश्नाचे सविस्तर Explanation सह",
+  "entry": "src/main.tsx",
+  "bindings": []
+}
