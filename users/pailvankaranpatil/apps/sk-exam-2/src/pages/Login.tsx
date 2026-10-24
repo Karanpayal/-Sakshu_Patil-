@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { verifyAdmin, getStudentByMobile, generateOTP, verifyOTP } from '../utils/storage';
-import { GraduationCap, Shield, Phone, Lock, Mail, ArrowRight, Eye, EyeOff, MessageSquare, Copy, CheckCircle } from 'lucide-react';
+import { GraduationCap, Shield, Phone, Lock, Mail, ArrowRight, Eye, EyeOff, MessageSquare, Copy, CheckCircle, User, Hash, BookOpen } from 'lucide-react';
 
 export default function Login({ onSwitchToRegister }: { onSwitchToRegister: () => void }) {
   const { login } = useAuth();
@@ -20,6 +20,7 @@ export default function Login({ onSwitchToRegister }: { onSwitchToRegister: () =
   const [generatedOtp, setGeneratedOtp] = useState('');
   const [studentError, setStudentError] = useState('');
   const [otpCopied, setOtpCopied] = useState(false);
+  const [loginSuccess, setLoginSuccess] = useState<any>(null);
 
   const handleAdminLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +60,11 @@ export default function Login({ onSwitchToRegister }: { onSwitchToRegister: () =
     if (verifyOTP(mobile, otp)) {
       const student = getStudentByMobile(mobile);
       if (student) {
-        login('student', student.id);
+        setLoginSuccess(student);
+        // Auto-login after 3 seconds
+        setTimeout(() => {
+          login('student', student.id);
+        }, 3000);
       } else {
         setStudentError('Student not found');
       }
@@ -67,6 +72,70 @@ export default function Login({ onSwitchToRegister }: { onSwitchToRegister: () =
       setStudentError('Invalid or expired OTP');
     }
   };
+
+  // Login Success Screen - Show student details after OTP verification
+  if (loginSuccess) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-teal-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-200 dark:border-gray-700">
+            {/* Success Icon */}
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full mb-4">
+                <CheckCircle className="w-9 h-9 text-green-600 dark:text-green-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Login Successful!</h2>
+              <p className="text-gray-500 dark:text-gray-400 mt-1">Welcome back, {loginSuccess.name}</p>
+            </div>
+
+            {/* Student Details Card */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 mb-4 border border-blue-200 dark:border-blue-800">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="bg-blue-600 p-2 rounded-lg">
+                    <Hash className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Roll Number</p>
+                    <p className="text-xl font-bold text-blue-600 dark:text-blue-400">{loginSuccess.rollNo}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="bg-green-600 p-2 rounded-lg">
+                    <User className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Student ID</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white font-mono">{loginSuccess.skId}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="bg-purple-600 p-2 rounded-lg">
+                    <BookOpen className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Class</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">{loginSuccess.className}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="mb-2">
+              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
+                <span>Redirecting to dashboard...</span>
+                <span>3s</span>
+              </div>
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{ width: '100%' }}></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
