@@ -1,0 +1,8 @@
+{
+  "id": "6add02519cc3a3d18a5ce676",
+  "schemaVersion": 1,
+  "title": "SK_EXAM",
+  "description": "Complete Exam Management Application with Admin and Student portals, daily tests, scoring, rankings, progress tracking, PDF reports, and dark mode.",
+  "entry": "src/main.tsx",
+  "bindings": []
+}
